@@ -37,6 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Our custom apps for FreshMarket
+    'accounts.apps.AccountsConfig',
+    'stores.apps.StoresConfig',
+    'products.apps.ProductsConfig',
+    'cart.apps.CartConfig',
+    'orders.apps.OrdersConfig',
+
 ]
 
 MIDDLEWARE = [
