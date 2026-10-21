@@ -3,11 +3,10 @@ from .models import Order, OrderItem
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
-    extra = 0
+    raw_id_fields = ['product']
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'store', 'status', 'total_price', 'created_at')
-    list_filter = ('status', 'created_at', 'store')
-    search_fields = ('user__username', 'store__name', 'phone_number')
+    list_display = ['id', 'first_name', 'last_name', 'phone_number', 'store', 'paid', 'created']
+    list_filter = ['paid', 'created', 'store']
     inlines = [OrderItemInline]

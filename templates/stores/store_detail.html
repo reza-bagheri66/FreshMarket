@@ -32,7 +32,10 @@
                     <div class="product-card">
                         <h3>{{ product.name }}</h3>
                         <p class="price">{{ product.price }} تومان</p>
-                        <button class="btn-add">افزودن به سبد خرید</button>
+                        <form action="{% url 'cart:cart_add' product.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-add">افزودن به سبد خرید</button>
+                        </form>
                     </div>
                 {% endfor %}
             </div>
