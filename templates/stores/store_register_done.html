@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ثبت‌نام موفق | FreshMarket</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px; direction: rtl; text-align: center; }
+        .container { max-width: 500px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { color: #28a745; font-size: 22px; }
+        p { font-size: 15px; color: #495057; line-height: 1.6; }
+        .btn-home { display: inline-block; margin-top: 20px; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>درخواست شما با موفقیت ثبت شد! 🎉</h1>
+        <p>فروشگاه گرامی <strong>{{ store.name }}</strong>، اطلاعات شما دریافت شد.</p>
+        <p>حساب کاربری و فروشگاه شما پس از بررسی و تایید توسط مدیریت سایت فعال خواهد شد و محصولات شما در سایت قابل نمایش خواهند بود.</p>
+        <a href="{% url 'stores:store_list' %}" class="btn-home">بازگشت به صفحه اصلی</a>
+    </div>
+</body>
+</html>

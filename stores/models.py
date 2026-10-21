@@ -11,6 +11,8 @@ class Store(models.Model):
     neighborhood = models.CharField(max_length=100, verbose_name="محله")
     address = models.TextField(verbose_name="آدرس دقیق")
     phone_number = models.CharField(max_length=15, verbose_name="شماره تماس")
+
+    is_active = models.BooleanField(default=False, verbose_name="تایید شده توسط ادمین") # این فیلد برای تایید فروشگاه است
     
     # تصاویر و وضعیت‌ها
     logo = models.ImageField(upload_to='stores/logos/', blank=True, null=True, verbose_name="لوگوی فروشگاه")
