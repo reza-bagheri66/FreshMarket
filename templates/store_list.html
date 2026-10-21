@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMarket | فروشگاه‌های محلی</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; direction: rtl; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .store-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .store-title { margin-0 0 10px 0; color: #2c3e50; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-open { background-color: #d4edda; color: #155724; }
+        .badge-closed { background-color: #f8d7da; color: #721c24; }
+        .empty-msg { text-align: center; color: #6c757d; font-size: 18px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>به FreshMarket خوش آمدید 🛒</h1>
+            <p>لیست فروشگاه‌های محلی اطراف شما</p>
+        </div>
+
+        {% if stores %}
+            <div class="store-grid">
+                {% for store in stores %}
+                    <div class="store-card">
+                        <h3 class="store-title">{{ store.name }}</h3>
+                        <p><strong>محله:</strong> {{ store.neighborhood }}</p>
+                        <p><strong>حداقل سفارش:</strong> {{ store.min_order_amount }} تومان</p>
+                        <p>
+                            {% if store.is_open %}
+                                <span class="badge badge-open">باز است</span>
+                            {% else %}
+                                <span class="badge badge-closed">بسته است</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-msg">
+                <p>هنوز هیچ فروشگاهی در سامانه ثبت نشده است.</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
