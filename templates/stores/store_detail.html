@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ store.name }} | FreshMarket</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; direction: rtl; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .store-header { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .back-btn { display: inline-block; margin-bottom: 15px; color: #007bff; text-decoration: none; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .product-card { background: #fff; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+        .price { font-weight: bold; color: #28a745; margin: 10px 0; }
+        .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'stores:store_list' %}" class="back-btn">← بازگشت به لیست فروشگاه‌ها</a>
+        
+        <div class="store-header">
+            <h1>{{ store.name }}</h1>
+            <p><strong>محله:</strong> {{ store.neighborhood }} | <strong>آدرس:</strong> {{ store.address }}</p>
+            <p><strong>شماره تماس:</strong> {{ store.phone_number }}</p>
+        </div>
+
+        <h2>محصولات فروشگاه</h2>
+        {% if products %}
+            <div class="product-grid">
+                {% for product in products %}
+                    <div class="product-card">
+                        <h3>{{ product.name }}</h3>
+                        <p class="price">{{ product.price }} تومان</p>
+                        <button class="btn-add">افزودن به سبد خرید</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>هنوز محصولی برای این فروشگاه ثبت نشده است.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

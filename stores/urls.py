@@ -5,4 +5,5 @@ app_name = 'stores'
 
 urlpatterns = [
     path('', views.store_list, name='store_list'),
+    path('store/<slug:slug>/', views.store_detail, name='store_detail'),  # مسیر جدید
 ]

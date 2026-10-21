@@ -28,7 +28,11 @@
             <div class="store-grid">
                 {% for store in stores %}
                     <div class="store-card">
-                        <h3 class="store-title">{{ store.name }}</h3>
+                        <h3 class="store-title">
+                            <a href="{% url 'stores:store_detail' store.slug %}" style="text-decoration: none; color: inherit;">
+                                {{ store.name }}
+                            </a>
+                        </h3>
                         <p><strong>محله:</strong> {{ store.neighborhood }}</p>
                         <p><strong>حداقل سفارش:</strong> {{ store.min_order_amount }} تومان</p>
                         <p>
