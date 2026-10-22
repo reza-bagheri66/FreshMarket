@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.text import slugify
 from .models import Store
@@ -48,3 +48,22 @@ def store_register(request):
         form = StoreRegistrationForm()
     
     return render(request, 'stores/store_register.html', {'form': form})
+
+   
+@login_required
+def vendor_dashboard(request):
+    # بررسی اینکه آیا کاربر لاگین‌شده صاحب فروشگاهی هست یا خیر
+    try:
+        store = Store.objects.get(owner=request.user)
+    except Store.DoesNotExist:
+        # اگر فروشگاه نداشت، به صفحه ثبت‌نام هدایت می‌شود
+        return redirect('stores:store_register')
+
+    # دریافت لیست محصولات فروشگاه
+    products = store.products.all()  # یا store.product_set.all() بر اساس مدل Product شما
+
+    context = {
+        'store': store,
+        'products': products,
+    }
+    return render(request, 'stores/vendor_dashboard.html', context)

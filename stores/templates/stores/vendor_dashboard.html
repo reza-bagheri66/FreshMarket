@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>پنل مدیریت فروشگاه {{ store.name }}</h2>
+    <hr>
+
+    <!-- وضعیت تایید فروشگاه -->
+    <div class="alert {% if store.is_active %}alert-success{% else %}alert-warning{% endif %}" role="alert">
+        <strong>وضعیت فروشگاه:</strong>
+        {% if store.is_active %}
+            تایید شده و فعال در سایت
+        {% else %}
+            در انتظار تایید ادمین سایت
+        {% endif %}
+    </div>
+
+    <!-- اطلاعات خلاصه فروشگاه -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">مشخصات فروشگاه</h5>
+            <p class="card-text"><strong>محله:</strong> {{ store.neighborhood }}</p>
+            <p class="card-text"><strong>شماره تماس:</strong> {{ store.phone_number }}</p>
+            <p class="card-text"><strong>حداقل مبلغ سفارش:</strong> {{ store.min_order_amount }} تومان</p>
+        </div>
+    </div>
+
+    <!-- لیست محصولات فروشگاه -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>محصولات فروشگاه</h4>
+        <!-- در گام بعدی لینک افزودن محصول را اینجا می‌گذاریم -->
+        <a href="#" class="btn btn-primary disabled">+ افزودن محصول جدید</a>
+    </div>
+
+    {% if products %}
+        <ul class="list-group">
+            {% for product in products %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ product.name }}
+                    <span class="badge bg-secondary rounded-pill">{{ product.price }} تومان</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">هنوز محصولی ثبت نکرده‌اید.</p>
+    {% endif %}
+</div>
+{% endblock %}
