@@ -26,3 +26,14 @@ class Store(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.neighborhood})"
+
+class Product(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='products', verbose_name='فروشگاه')
+    name = models.CharField(max_length=200, verbose_name='نام محصول')
+    price = models.PositiveIntegerField(verbose_name='قیمت (تومان)')
+    description = models.TextField(blank=True, null=True, verbose_name='توضیحات')
+    image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name='تصویر محصول')
+    is_available = models.BooleanField(default=True, verbose_name='موجود در انبار')
+
+    def __str__(self):
+        return f"{self.name} - {self.store.name}"

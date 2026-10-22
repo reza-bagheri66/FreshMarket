@@ -1,6 +1,6 @@
 from django.db import models
 from stores.models import Store
-from products.models import Product
+from stores.models import Product
 
 class Order(models.Model):
     first_name = models.CharField(max_length=50, verbose_name='نام')

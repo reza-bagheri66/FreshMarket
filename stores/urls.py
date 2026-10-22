@@ -8,4 +8,5 @@ urlpatterns = [
     path('register/', views.store_register, name='store_register'),  # مسیر ثبت‌نام فروشگاه
     path('dashboard/', views.vendor_dashboard, name='vendor_dashboard'),  # مسیر جدید پنل فروشنده
     path('store/<slug:slug>/', views.store_detail, name='store_detail'),  # مسیر جدید
+    path('dashboard/add-product/', views.add_product, name='add_product'),
 ]

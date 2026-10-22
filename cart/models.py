@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from products.models import Product
+from stores.models import Product
 
 class Cart(models.Model):
     # هر سبد خرید متعلق به یک کاربر است

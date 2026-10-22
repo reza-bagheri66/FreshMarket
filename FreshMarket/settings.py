@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     # Our custom apps for FreshMarket
     'accounts.apps.AccountsConfig',
     'stores.apps.StoresConfig',
-    'products.apps.ProductsConfig',
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
 

@@ -1,8 +1,8 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.text import slugify
-from .models import Store
-from .forms import StoreRegistrationForm
+from .models import Store, Product
+from .forms import StoreRegisterForm, ProductForm
 
 def store_list(request):
     # نمایش لیست فروشگاه‌های تایید شده
@@ -23,30 +23,27 @@ def store_detail(request, slug):
     }
     return render(request, 'stores/store_detail.html', context)
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .forms import StoreRegisterForm
+from .models import Store
+
 @login_required
 def store_register(request):
-    # ثبت‌نام مستقیم فروشگاه توسط فروشنده
+    # اگر کاربر از قبل فروشگاه ثبت کرده، هدایتش می‌کنیم به داشبورد خودش
+    if Store.objects.filter(owner=request.user).exists():
+        return redirect('stores:vendor_dashboard')
+
     if request.method == 'POST':
-        form = StoreRegistrationForm(request.POST, request.FILES)
+        form = StoreRegisterForm(request.POST, request.FILES)
         if form.is_valid():
             store = form.save(commit=False)
-            store.owner = request.user  # اختصاص کاربر لاگین‌شده به عنوان صاحب فروشگاه
-            store.is_active = False     # پیش‌فرض غیرفعال در انتظار تایید ادمین
-            
-            # تولید slug یکتا بر اساس نام فروشگاه
-            base_slug = slugify(store.name, allow_unicode=True)
-            slug = base_slug
-            counter = 1
-            while Store.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-            store.slug = slug
-            
+            store.owner = request.user  # کاربر جاری به عنوان مالک ثبت می‌شود
             store.save()
-            return render(request, 'stores/store_register_done.html', {'store': store})
+            return redirect('stores:vendor_dashboard')
     else:
-        form = StoreRegistrationForm()
-    
+        form = StoreRegisterForm()
+
     return render(request, 'stores/store_register.html', {'form': form})
 
    
@@ -67,3 +64,19 @@ def vendor_dashboard(request):
         'products': products,
     }
     return render(request, 'stores/vendor_dashboard.html', context)
+
+@login_required
+def add_product(request):
+    store = get_object_or_404(Store, owner=request.user)
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.store = store
+            product.save()
+            return redirect('stores:vendor_dashboard')
+    else:
+        form = ProductForm()
+        
+    return render(request, 'stores/add_product.html', {'form': form, 'store': store})
