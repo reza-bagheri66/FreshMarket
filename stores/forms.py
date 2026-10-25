@@ -29,18 +29,18 @@ class StoreRegisterForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'price', 'description', 'image', 'is_available']
+        fields = ['category', 'name', 'price', 'description', 'image', 'is_active']
         labels = {
             'name': 'نام محصول',
             'price': 'قیمت (تومان)',
             'description': 'توضیحات',
             'image': 'تصویر محصول',
-            'is_available': 'موجود در انبار',
+            'is_active': 'موجود در انبار',
         }
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'مثلاً: گوجه‌فرنگی تازه'}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'مثلاً: ۲۵۰۰۰'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
-            'is_available': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

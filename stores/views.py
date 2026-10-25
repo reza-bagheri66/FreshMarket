@@ -23,10 +23,6 @@ def store_detail(request, slug):
     }
     return render(request, 'stores/store_detail.html', context)
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .forms import StoreRegisterForm
-from .models import Store
 
 @login_required
 def store_register(request):
@@ -80,3 +76,23 @@ def add_product(request):
         form = ProductForm()
         
     return render(request, 'stores/add_product.html', {'form': form, 'store': store})
+
+
+@login_required
+def add_product(request):
+    try:
+        store = request.user.store
+    except Store.DoesNotExist:
+        return redirect('stores:store_register')
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.store = store
+            product.save()
+            return redirect('stores:vendor_dashboard')
+    else:
+        form = ProductForm()
+    
+    return render(request, 'stores/add_product.html', {'form': form})
