@@ -1,8 +1,16 @@
 from django.db import models
 from stores.models import Store
 from stores.models import Product
+from django.conf import settings
 
 class Order(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, verbose_name='کاربر')
+    STATUS_CHOICES = (
+        ('pending', 'در حال بررسی'),
+        ('processing', 'در حال آماده‌سازی'),
+        ('shipped', 'ارسال شده'),
+        ('completed', 'تحویل داده شده'),
+    )
     first_name = models.CharField(max_length=50, verbose_name='نام')
     last_name = models.CharField(max_length=50, verbose_name='نام خانوادگی')
     phone_number = models.CharField(max_length=15, verbose_name='شماره تماس')
@@ -10,6 +18,7 @@ class Order(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='orders', verbose_name='فروشگاه')
     created = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ثبت')
     paid = models.BooleanField(default=False, verbose_name='پرداخت شده')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name='وضعیت سفارش')
 
     class Meta:
         ordering = ['-created']
@@ -38,3 +47,5 @@ class OrderItem(models.Model):
 
     def get_cost(self):
         return self.price * self.quantity
+
+

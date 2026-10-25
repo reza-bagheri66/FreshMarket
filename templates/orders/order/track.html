@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding-top: 40px; max-width: 700px;">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-4">🔍 پیگیری وضعیت سفارش</h2>
+        
+        <form method="get" class="mt-3">
+            <div class="mb-3">
+                <label class="form-label font-weight-bold">کد پیگیری سفارش (شناسه سفارش):</label>
+                <input type="text" name="order_id" class="form-control" placeholder="مثلاً 1 یا 2" value="{{ request.GET.order_id }}">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">استعلام وضعیت</button>
+        </form>
+
+        {% if order %}
+            <div class="mt-4 alert alert-info">
+                <h4 class="alert-heading">نتیجه جستجو برای سفارش شماره {{ order.id }}:</h4>
+                <hr>
+                <p><strong>وضعیت فعلی:</strong> <span class="badge bg-success">{{ order.get_status_display }}</span></p>
+                <p><strong>نام تحویل‌گیرنده:</strong> {{ order.first_name }} {{ order.last_name }}</p>
+                <p><strong>شماره تماس:</strong> {{ order.phone_number }}</p>
+                <p><strong>آدرس:</strong> {{ order.address }}</p>
+                <p><strong>تاریخ ثبت:</strong> {{ order.created|date:"Y/m/d - H:i" }}</p>
+                
+                <hr>
+                <h5 class="mt-3">📦 اقلام سفارش:</h5>
+                <ul class="list-group mb-3">
+                    {% for item in order.items.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ item.product.name }} (تعداد: {{ item.quantity }})</span>
+                            <span class="badge bg-secondary rounded-pill">{{ item.get_cost }} تومان</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <h5 class="text-danger">مبلغ کل قابل پرداخت: {{ order.get_total_cost }} تومان</h5>
+            </div>
+        {% elif request.GET.order_id %}
+            <div class="mt-4 alert alert-danger">
+                سفارشی با کد پیگیری <strong>{{ request.GET.order_id }}</strong> یافت نشد! لطفاً کد را بررسی کنید.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

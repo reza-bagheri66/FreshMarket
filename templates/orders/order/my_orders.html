@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding-top: 40px; max-width: 800px;">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-4">📦 سفارش‌های من</h2>
+
+        {% if orders %}
+            <div class="list-group">
+                {% for order in orders %}
+                    <div class="list-group-item mb-3 border rounded p-3 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">سفارش شماره: {{ order.id }}</h5>
+                            <span class="badge bg-success">{{ order.get_status_display }}</span>
+                        </div>
+                        <p class="text-muted mb-1">تاریخ ثبت: {{ order.created|date:"Y/m/d - H:i" }}</p>
+                        <p class="mb-2"><strong>مبلغ کل:</strong> {{ order.get_total_cost }} تومان</p>
+                        
+                        <hr>
+                        <h6 class="mb-2">اقلام سفارش:</h6>
+                        <ul class="list-unstyled ps-3">
+                            {% for item in order.items.all %}
+                                <li class="text-secondary">
+                                    - {{ item.product.name }} (تعداد: {{ item.quantity }}) | قیمت: {{ item.get_cost }} تومان
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning text-center">
+                شما هنوز هیچ سفارشی ثبت نکرده‌اید!
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

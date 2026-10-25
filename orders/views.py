@@ -1,5 +1,6 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .models import OrderItem
+from .models import OrderItem, Order
 from .forms import OrderCreateForm
 from cart.cart import Cart
 from stores.models import Store
@@ -18,6 +19,10 @@ def order_create(request):
             if store:
                 order = form.save(commit=False)
                 order.store = store
+            
+                if request.user.is_authenticated:
+                    order.user = request.user
+                
                 order.save()
                 
                 for item in cart:
@@ -34,3 +39,19 @@ def order_create(request):
         form = OrderCreateForm()
     
     return render(request, 'orders/order/create.html', {'cart': cart, 'form': form})
+
+def order_track(request):
+    order = None
+    order_id = request.GET.get('order_id')
+    if order_id:
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            order = None
+    return render(request, 'orders/order/track.html', {'order': order})
+
+
+@login_required(login_url='accounts:login')
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created')
+    return render(request, 'orders/order/my_orders.html', {'orders': orders})
