@@ -23,10 +23,15 @@
     <div class="container">
         <a href="{% url 'stores:store_list' %}" class="back-btn">← بازگشت به لیست فروشگاه‌ها</a>
         
-        <div class="store-header">
-            <h1>{{ store.name }}</h1>
-            <p><strong>محله:</strong> {{ store.neighborhood }} | <strong>آدرس:</strong> {{ store.address }}</p>
-            <p><strong>شماره تماس:</strong> {{ store.phone_number }}</p>
+        <div class="store-header d-flex align-items-center gap-3 p-3 mb-4 bg-white rounded shadow-sm">
+            {% if store.logo %}
+                <img src="{{ store.logo.url }}" alt="{{ store.name }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #28a745;">
+            {% endif %}
+            <div>
+                <h1 class="h3 mb-1">{{ store.name }}</h1>
+                <p class="mb-1 text-muted"><strong>محله:</strong> {{ store.neighborhood }} | <strong>آدرس:</strong> {{ store.address }}</p>
+                <p class="mb-0 text-muted"><strong>شماره تماس:</strong> {{ store.phone_number }}</p>
+            </div>
         </div>
 
         <h2>محصولات فروشگاه</h2>

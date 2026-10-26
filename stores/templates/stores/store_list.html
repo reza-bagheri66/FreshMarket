@@ -31,6 +31,15 @@
             <div class="store-grid">
                 {% for store in stores %}
                     <div class="store-card">
+                        <!-- نمایش لوگوی فروشگاه با قابلیت کلیک -->
+                        {% if store.logo %}
+                            <div class="text-center mb-3">
+                                <a href="{% url 'stores:store_detail' store.slug %}">
+                                    <img src="{{ store.logo.url }}" alt="{{ store.name }}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%; border: 2px solid #28a745; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                </a>
+                            </div>
+                        {% endif %}
+
                         <h3 class="store-title">
                             <a href="{% url 'stores:store_detail' store.slug %}" style="text-decoration: none; color: inherit;">
                                 {{ store.name }}
@@ -40,9 +49,9 @@
                         <p><strong>حداقل سفارش:</strong> {{ store.min_order_amount }} تومان</p>
                         <p>
                             {% if store.is_open %}
-                                <span class="badge badge-open">باز است</span>
+                                <span class="badge badge-open">🟢 باز است</span>
                             {% else %}
-                                <span class="badge badge-closed">بسته است</span>
+                                <span class="badge badge-closed">🔴 بسته است</span>
                             {% endif %}
                         </p>
                     </div>
