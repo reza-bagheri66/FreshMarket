@@ -108,6 +108,30 @@
         </div>
 
         <h2>محصولات فروشگاه</h2>
+        <!-- نوار جستجوی محصولات در فروشگاه -->
+        <div class="row mb-4">
+            <div class="col-md-6 mx-auto">
+                <form method="get" action="" class="d-flex gap-2 align-items-center">
+                    <input type="text" 
+                        name="q" 
+                        value="{{ query|default:'' }}" 
+                        class="form-control" 
+                        placeholder="جستجوی محصول در این فروشگاه...">
+                        
+                    <!-- دکمه جستجو (فقط آیکون ذره‌بین) -->
+                    <button type="submit" class="btn btn-success d-flex align-items-center justify-content-center" style="width: 42px; height: 38px; flex-shrink: 0;" title="جستجو">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    
+                    <!-- دکمه لغو جستجو (ضربدر قرمز با سایز کاملاً یکسان) -->
+                    {% if query %}
+                        <a href="{% url 'stores:store_detail' store.slug %}" class="btn btn-outline-danger d-flex align-items-center justify-content-center" style="width: 42px; height: 38px; flex-shrink: 0;" title="لغو جستجو">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
         {% if products %}
             <div class="product-grid">
                 {% for product in products %}
@@ -138,7 +162,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p>هنوز محصولی برای این فروشگاه ثبت نشده است.</p>
+            <p> محصولی با این مشخصات برای این فروشگاه ثبت نشده است </p>
         {% endif %}
     </div>
 </body>

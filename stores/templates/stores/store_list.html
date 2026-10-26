@@ -1,68 +1,107 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreshMarket | فروشگاه‌های محلی</title>
-    <style>
-        body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; direction: rtl; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .store-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .store-title { margin-0 0 10px 0; color: #2c3e50; }
-        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .badge-open { background-color: #d4edda; color: #155724; }
-        .badge-closed { background-color: #f8d7da; color: #721c24; }
-        .empty-msg { text-align: center; color: #6c757d; font-size: 18px; margin-top: 40px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>به FreshMarket خوش آمدید 🛒</h1>
-            <p>لیست فروشگاه‌های محلی اطراف شما</p>
-        </div>
+<div class="row mb-5 text-center">
+    <div class="col-lg-8 mx-auto">
+        <h1 class="fw-bold mb-3 text-success">خرید از فروشگاه‌های محلی FreshMarket</h1>
+        <p class="text-muted mb-4">محصول دلخواه خود را میان تمام فروشگاه‌ها جستجو و مقایسه کنید</p>
+        
+        <!-- نوار جستجوی سراسری محصولات -->
+        <form method="get" action="" class="d-flex gap-2 shadow-sm p-2 bg-white rounded-pill align-items-center">
+            <input type="text" 
+                   name="q" 
+                   value="{{ query|default:'' }}" 
+                   class="form-control border-0 px-3 bg-transparent" 
+                   placeholder="جستجوی محصول در بین تمامی فروشگاه‌ها...">
+                   
+            <button type="submit" class="btn btn-success rounded-pill d-flex align-items-center justify-content-center" style="width: 45px; height: 40px; flex-shrink: 0;" title="جستجو">
+                <i class="fas fa-search"></i>
+            </button>
+            
+            {% if query %}
+                <a href="{% url 'stores:store_list' %}" class="btn btn-outline-danger rounded-pill d-flex align-items-center justify-content-center" style="width: 45px; height: 40px; flex-shrink: 0;" title="لغو جستجو">
+                    <i class="fas fa-times"></i>
+                </a>
+            {% endif %}
+        </form>
+    </div>
+</div>
 
-        {% if stores %}
-            <div class="store-grid">
-                {% for store in stores %}
-                    <div class="store-card">
-                        <!-- نمایش لوگوی فروشگاه با قابلیت کلیک -->
-                        {% if store.logo %}
-                            <div class="text-center mb-3">
-                                <a href="{% url 'stores:store_detail' store.slug %}">
-                                    <img src="{{ store.logo.url }}" alt="{{ store.name }}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%; border: 2px solid #28a745; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+<!-- اگر کاربر جستجو کرده بود، نتایج محصولات نمایش داده شود -->
+{% if query %}
+    <div class="mb-4">
+        <h3 class="mb-4">نتایج جستجو برای: "{{ query }}"</h3>
+        {% if products %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for product in products %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-store"></i> فروشگاه: 
+                                    <a href="{% url 'stores:store_detail' product.store.slug %}" class="text-success text-decoration-none fw-bold">
+                                        {{ product.store.name }}
+                                    </a>
+                                </p>
+                                <p class="card-text text-success fw-bold mt-auto">{{ product.price }} تومان</p>
+                                
+                                <a href="{% url 'stores:store_detail' product.store.slug %}" class="btn btn-outline-success btn-sm mt-2">
+                                    مشاهده و خرید از فروشگاه
                                 </a>
                             </div>
-                        {% endif %}
-
-                        <h3 class="store-title">
-                            <a href="{% url 'stores:store_detail' store.slug %}" style="text-decoration: none; color: inherit;">
-                                {{ store.name }}
-                            </a>
-                        </h3>
-                        <p><strong>محله:</strong> {{ store.neighborhood }}</p>
-                        <p><strong>حداقل سفارش:</strong> {{ store.min_order_amount }} تومان</p>
-                        <p>
-                            {% if store.is_open %}
-                                <span class="badge badge-open">🟢 باز است</span>
-                            {% else %}
-                                <span class="badge badge-closed">🔴 بسته است</span>
-                            {% endif %}
-                        </p>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
         {% else %}
-            <div class="empty-msg">
-                <p>هنوز هیچ فروشگاهی در سامانه ثبت نشده است.</p>
+            <div class="alert alert-warning text-center">
+               محصولی با این مشخصات در هیچکدام از فروشگاه ها ثبت نشده است
             </div>
         {% endif %}
     </div>
-</body>
-</html>
+{% else %}
+    <!-- حالت عادی: نمایش لیست فروشگاه‌ها -->
+    <h3 class="mb-4">فروشگاه‌های فعال</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for store in stores %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    {% if store.logo %}
+                        <div class="text-center pt-3">
+                            <a href="{% url 'stores:store_detail' store.slug %}">
+                                <img src="{{ store.logo.url }}" alt="{{ store.name }}" style="width: 70px; height: 70px; object-fit: cover;" class="rounded-circle">
+                            </a>
+                        </div>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-success text-center">
+                            <a href="{% url 'stores:store_detail' store.slug %}" class="text-decoration-none text-success">
+                                {{ store.name }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted small"><strong>محله:</strong> {{ store.neighborhood }}</p>
+                        <p class="card-text text-muted small"><strong>حداقل سفارش:</strong> {{ store.min_order_amount }} تومان</p>
+                        <p class="card-text">
+                            {% if store.is_open %}
+                                <span class="badge bg-success">🟢 باز است</span>
+                            {% else %}
+                                <span class="badge bg-danger">🔴 بسته است</span>
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'stores:store_detail' store.slug %}" class="btn btn-success btn-sm mt-auto">ورود به فروشگاه</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <p class="text-muted text-center">هنوز فروشگاهی ثبت نشده است.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
 {% endblock %}

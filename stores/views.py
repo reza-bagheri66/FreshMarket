@@ -3,23 +3,45 @@ from django.contrib.auth.decorators import login_required
 from django.utils.text import slugify
 from .models import Store, Product
 from .forms import StoreRegisterForm, ProductForm
+from django.db.models import Q
 
 def store_list(request):
-    # نمایش لیست فروشگاه‌های تایید شده
+    query = request.GET.get('q')
     stores = Store.objects.filter(is_active=True)
-    return render(request, 'stores/store_list.html', {'stores': stores})
-
-def store_detail(request, slug):
-    # نمایش جزئیات یک فروشگاه خاص بر اساس slug
-    store = get_object_or_404(Store, slug=slug, is_active=True)
+    products = None
     
-    # دریافت محصولات مربوط به این فروشگاه
-    # (اگر در مدل Product کلید خارجی با related_name='products' به Store متصل شده است)
-    products = store.products.all()  # اگر related_name ندارید، از store.product_set.all() استفاده کنید
+    # اگر کاربر چیزی جستجو کرده بود، محصولات تمام فروشگاه‌ها را فیلتر کن
+    if query:
+        products = Product.objects.filter(
+            store__is_active=True
+        ).filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+        
+    context = {
+        'stores': stores,
+        'products': products,
+        'query': query,
+    }
+    return render(request, 'stores/store_list.html', context)
+
+    
+def store_detail(request, slug):
+    # نمایش جزئیات فروشگاه بر اساس slug[cite: 3]
+    store = get_object_or_404(Store, slug=slug, is_active=True)
+    products = store.products.all()
+    
+    # دریافت کلمه جستجو شده از طریق متد GET
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
     
     context = {
         'store': store,
         'products': products,
+        'query': query,  # برای حفظ کلمه جستجو شده داخل باکس اینپوت
     }
     return render(request, 'stores/store_detail.html', context)
 
