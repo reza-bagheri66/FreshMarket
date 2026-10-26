@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4" dir="rtl">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>مدیریت سفارش‌های فروشگاه: {{ store.name }}</h2>
+        <a href="{% url 'stores:vendor_dashboard' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-right"></i> بازگشت به داشبورد
+        </a>
+    </div>
+
+    {% if orders %}
+        <div class="table-responsive bg-white shadow-sm rounded p-3">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>شماره سفارش</th>
+                        <th>نام مشتری</th>
+                        <th>شماره تماس</th>
+                        <th>مبلغ کل</th>
+                        <th>تاریخ ثبت</th>
+                        <th>وضعیت فعلی</th>
+                        <th>تغییر وضعیت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.first_name }} {{ order.last_name }}</td>
+                            <td>{{ order.phone_number }}</td>
+                            <td>{{ order.get_total_cost }} تومان</td>
+                            <td>{{ order.created|date:"Y/m/d - H:i" }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if order.status == 'pending' %}bg-warning text-dark
+                                    {% elif order.status == 'processing' %}bg-info text-dark
+                                    {% elif order.status == 'shipped' %}bg-primary
+                                    {% elif order.status == 'completed' %}bg-success
+                                    {% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <form method="post" class="d-flex gap-1">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                    <select name="status" class="form-select form-select-sm" style="width: 140px;">
+                                        {% for key, val in order.STATUS_CHOICES %}
+                                            <option value="{{ key }}" {% if order.status == key %}selected{% endif %}>{{ val }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-success btn-sm" title="بروزرسانی">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            هنوز سفارشی برای این فروشگاه ثبت نشده است.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
