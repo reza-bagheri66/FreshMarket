@@ -51,15 +51,15 @@
             <!-- ۳. سمت چپ: دکمه‌های با ابعاد ثابت و یکسان -->
             <div class="d-flex align-items-center gap-2">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'accounts:logout' %}" class="btn btn-danger btn-sm" style="width: 140px; text-align: center;">خروج</a>
+                    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger btn-sm" style="width: 140px; text-align: center;">خروج</a>
                     {% if user.store %}
-                        <a href="{% url 'stores:vendor_dashboard' %}" class="btn btn-primary btn-sm" style="width: 140px; text-align: center;">پنل فروشگاه من</a>
+                        <a href="{% url 'stores:vendor_dashboard' %}" class="btn btn-outline-primary btn-sm ms-2" style="width: 140px; text-align: center;">پنل فروشگاه من</a>
                     {% else %}
-                        <a href="{% url 'stores:store_register' %}" class="btn btn-success btn-sm" style="width: 140px; text-align: center;">ثبت‌نام فروشگاه</a>
+                        <a href="{% url 'stores:store_register' %}" class="btn btn-outline-primary btn-sm ms-2" style="width: 140px; text-align: center;">ثبت‌نام فروشگاه</a>
                     {% endif %}
                 {% else %}
                     <a href="{% url 'accounts:login' %}" class="btn btn-outline-success btn-sm" style="width: 140px; text-align: center;">ورود / ثبت‌نام</a>
-                    <a href="{% url 'stores:store_register' %}" class="btn btn-success btn-sm" style="width: 140px; text-align: center;">ثبت‌نام فروشگاه</a>
+                    <a href="{% url 'stores:store_register' %}" class="btn btn-outline-primary btn-sm ms-2" style="width: 140px; text-align: center;">ثبت‌نام فروشگاه</a>
                 {% endif %}
             </div>
 
