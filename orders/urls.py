@@ -9,4 +9,5 @@ urlpatterns = [
     path('payment/<int:order_id>/', views.simulate_payment, name='simulate_payment'),
     path('my-orders/', views.my_orders, name='my_orders'),
     path('vendor-orders/<slug:store_slug>/', views.vendor_order_list, name='vendor_order_list'),
+    path('detail/<int:order_id>/', views.order_detail, name='order_detail'),
 ]

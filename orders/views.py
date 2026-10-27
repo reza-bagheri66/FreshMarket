@@ -129,3 +129,14 @@ def vendor_order_list(request, store_slug):
         'orders': orders,
     }
     return render(request, 'orders/order/vendor_orders.html', context)
+
+@login_required
+def order_detail(request, order_id):
+    # بررسی اینکه کاربر عادی فقط سفارش خودش را ببیند یا فروشنده به سفارش فروشگاه خود دسترسی داشته باشد
+    order = get_object_or_404(Order, id=order_id)
+    
+    # اگر کاربر نه صاحب سفارش است و نه صاحب فروشگاه مربوط به این سفارش، دسترسی محدود شود
+    if order.user != request.user and order.store.owner != request.user:
+        return redirect('stores:store_list')
+        
+    return render(request, 'orders/order/order_detail.html', {'order': order})
