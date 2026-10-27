@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .gateway-container { max-width: 500px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; direction: rtl; }
+    .gateway-header { background: #004085; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .amount { font-size: 24px; font-weight: bold; color: #28a745; margin: 15px 0; }
+    .btn-success-pay { background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 5px; font-size: 16px; width: 100%; margin-bottom: 10px; cursor: pointer; }
+    .btn-success-pay:hover { background: #218838; }
+    .btn-danger-pay { background: #dc3545; color: white; border: none; padding: 12px 20px; border-radius: 5px; font-size: 16px; width: 100%; cursor: pointer; }
+    .btn-danger-pay:hover { background: #c82333; }
+</style>
+
+<div class="container">
+    <div class="gateway-container">
+        <div class="gateway-header">
+            <h3 class="mb-0">شبیه‌ساز درگاه بانکی (تستی)</h3>
+            <small>درگاه پرداخت الکترونیک FreshMarket</small>
+        </div>
+        
+        <p class="text-muted">شماره سفارش: <strong>#{{ order.id }}</strong></p>
+        <div class="amount">
+            مبلغ قابل پرداخت: {{ order.get_total_cost }} تومان
+        </div>
+        <p class="text-secondary small mb-4">لطفاً برای شبیه‌سازی نتیجه تراکنش، یکی از دکمه‌های زیر را انتخاب کنید:</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="action" value="success" class="btn-success-pay">
+                ✅ پرداخت موفق (تایید تراکنش)
+            </button>
+            <button type="submit" name="action" value="cancel" class="btn-danger-pay">
+                ❌ انصراف / پرداخت ناموفق
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

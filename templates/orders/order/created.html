@@ -1,28 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    .success-container { max-width: 600px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; direction: rtl; }
+    .success-container h1 { color: #28a745; margin-bottom: 20px; }
+    .success-container p { font-size: 16px; color: #495057; line-height: 1.6; }
+    .btn-home { display: inline-block; margin-top: 20px; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; }
+    .btn-home:hover { background: #0056b3; color: white; }
+</style>
 
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>ثبت موفق سفارش | FreshMarket</title>
-    <style>
-        body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px; direction: rtl; text-align: center; }
-        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        h1 { color: #28a745; }
-        p { font-size: 16px; color: #495057; }
-        .btn-home { display: inline-block; margin-top: 20px; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; }
-    </style>
-</head>
-<body>
-    <div class="container">
+<div class="container">
+    <div class="success-container">
         <h1>سفارش شما با موفقیت ثبت شد! 🎉</h1>
-        <p>ممنون از خرید شما. کد پیگیری سفارش شما: <strong>{{ order.id }}</strong></p>
+        <p>ممنون از خرید شما. کد پیگیری سفارش شما: <strong class="text-dark">{{ order.id }}</strong></p>
         <p>سفارش شما برای فروشگاه ارسال شد و به زودی پردازش خواهد شد.</p>
         <a href="{% url 'stores:store_list' %}" class="btn-home">بازگشت به صفحه اصلی</a>
     </div>
-</body>
-</html>
-
+</div>
 {% endblock %}

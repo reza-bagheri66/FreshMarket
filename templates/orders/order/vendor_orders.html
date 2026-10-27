@@ -15,10 +15,13 @@
                 <thead class="table-light">
                     <tr>
                         <th>شماره سفارش</th>
-                        <th>نام مشتری</th>
-                        <th>شماره تماس</th>
+                        <th>نام سفارش‌دهنده</th>
+                        <th>موبایل سفارش‌دهنده</th>
+                        <th>نام گیرنده</th>
+                        <th>تلفن گیرنده</th>
                         <th>مبلغ کل</th>
                         <th>تاریخ ثبت</th>
+                        <th>وضعیت پرداخت</th>
                         <th>وضعیت فعلی</th>
                         <th>تغییر وضعیت</th>
                     </tr>
@@ -26,26 +29,64 @@
                 <tbody>
                     {% for order in orders %}
                         <tr>
-                            <td>#{{ order.id }}</td>
+                            <td>{{ order.id }}</td>
+                            
+                            <!-- نام و نام خانوادگی سفارش‌دهنده (هم‌شکل با نام گیرنده و بدون آدمک) -->
+                            <td>
+                                {% if order.user.first_name or order.user.last_name %}
+                                    {{ order.user.first_name }} {{ order.user.last_name }}
+                                {% else %}
+                                    {{ order.user.username }}
+                                {% endif %}
+                            </td>
+
+                            <!-- شماره موبایل سفارش‌دهنده -->
+                            <td>
+                                <span class="text-primary fw-bold" style="direction: ltr; display: inline-block;">
+                                    {{ order.user.username }}
+                                </span>
+                            </td>
+
+                            <!-- نام و نام خانوادگی گیرنده -->
                             <td>{{ order.first_name }} {{ order.last_name }}</td>
-                            <td>{{ order.phone_number }}</td>
+
+                            <!-- شماره تماس گیرنده -->
+                            <td>
+                                <span class="text-primary fw-bold" style="direction: ltr; display: inline-block;">
+                                    {{ order.phone_number }}
+                                </span>
+                            </td>
+
                             <td>{{ order.get_total_cost }} تومان</td>
                             <td>{{ order.created|date:"Y/m/d - H:i" }}</td>
+                            
+                            <!-- وضعیت پرداخت -->
+                            <td>
+                                {% if order.paid %}
+                                    <span class="badge bg-success">پرداخت موفق ✅</span>
+                                {% else %}
+                                    <span class="badge bg-danger">پرداخت نشده ❌</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- وضعیت سفارش -->
                             <td>
                                 <span class="badge 
                                     {% if order.status == 'pending' %}bg-warning text-dark
                                     {% elif order.status == 'processing' %}bg-info text-dark
                                     {% elif order.status == 'shipped' %}bg-primary
-                                    {% elif order.status == 'completed' %}bg-success
+                                    {% elif order.status == 'completed' or order.status == 'delivered' %}bg-success
                                     {% endif %}">
                                     {{ order.get_status_display }}
                                 </span>
                             </td>
+
+                            <!-- تغییر وضعیت -->
                             <td>
                                 <form method="post" class="d-flex gap-1">
                                     {% csrf_token %}
                                     <input type="hidden" name="order_id" value="{{ order.id }}">
-                                    <select name="status" class="form-select form-select-sm" style="width: 140px;">
+                                    <select name="status" class="form-select form-select-sm" style="width: 130px;">
                                         {% for key, val in order.STATUS_CHOICES %}
                                             <option value="{{ key }}" {% if order.status == key %}selected{% endif %}>{{ val }}</option>
                                         {% endfor %}
