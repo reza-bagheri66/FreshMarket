@@ -15,23 +15,43 @@
                     </div>
                 {% endif %}
 
+                <!-- اضافه کردن این بخش برای نمایش خطاهای فرم (اطلاعات اشتباه یا کاربر ناموجود) -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger text-center small mb-3">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 <!-- فرم ورود -->
                 <form method="post">
                     {% csrf_token %}
                     
-                        {% if request.GET.next %}
-                    <input type="hidden" name="next" value="{{ request.GET.next }}">
+                    {% if request.GET.next %}
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
                     {% endif %}
 
                     <div class="mb-3">
-                    
-                    <div class="mb-3">
                         <label class="form-label fw-bold">شماره موبایل</label>
                         <input type="text" name="username" class="form-control" placeholder="شماره موبایل خود را وارد کنید" required>
+                        <!-- اگر خطا روی خود فیلد باشد -->
+                        {% if form.username.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.username.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
+                    
                     <div class="mb-3">
                         <label class="form-label fw-bold">رمز عبور</label>
                         <input type="password" name="password" class="form-control" placeholder="رمز عبور" required>
+                        <!-- اگر خطا روی فیلد پسورد باشد -->
+                        {% if form.password.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.password.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <div class="d-grid gap-2 mt-4">
