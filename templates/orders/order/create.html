@@ -9,6 +9,7 @@
     input, textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px; }
     .btn-submit { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 15px; }
     .btn-submit:hover { background: #218838; }
+    .errorlist { color: #dc3545; list-style: none; padding: 0; margin: 5px 0 0 0; font-size: 14px; }
 </style>
 
 <div class="container">
@@ -24,6 +25,14 @@
             </ul>
             <p style="margin-bottom: 0;"><strong>مجموع قابل پرداخت: {{ cart.get_total_price }} تومان</strong></p>
         </div>
+
+        <!-- نمایش خطاهای فرم در صورت وجود -->
+        {% if form.errors %}
+            <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; direction: rtl; border: 1px solid #f5c6cb;">
+                <strong>لطفاً خطاهای زیر را برطرف کنید:</strong>
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
 
         <form method="post">
             {% csrf_token %}

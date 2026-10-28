@@ -10,7 +10,6 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- استایل‌های اختصاصی برای قفل کردن ابعاد، فونت‌ها و جلوگیری از پرش -->
     <style>
         .brand-logo {
             font-size: 24px !important;
@@ -31,19 +30,13 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top" style="height: 70px;">
         <div class="container d-flex justify-content-between align-items-center" style="max-width: 1140px;">
         
-            <!-- سمت راست: لوگو و لینک‌ها -->
+            <!-- سمت راست: لوگو و حساب کاربری من -->
             <div class="d-flex align-items-center gap-3">
                 <a class="navbar-brand brand-logo text-success m-0" href="{% url 'stores:store_list' %}">FreshMarket</a>
     
-                <!-- لینک سفارش‌های من -->
-                <a href="{% url 'orders:my_orders' %}" class="btn btn-outline-primary btn-sm ms-2">📦 سفارش‌های من</a>
-    
-                <!-- لینک سبد خرید من با شمارنده تعداد -->
-                <a href="{% url 'cart:cart_detail' %}" class="btn btn-outline-success btn-sm position-relative ms-1">
-                    🛒 سبد خرید من
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-count" style="font-size: 10px; {% if not cart or cart|length == 0 %}display: none;{% endif %}">
-                        {% if cart %}{{ cart|length }}{% else %}0{% endif %}
-                    </span>
+                <!-- حساب کاربری من -->
+                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 ms-2">
+                    <i class="fas fa-user-circle ms-1"></i> حساب کاربری من
                 </a>
             </div>
 
@@ -54,21 +47,25 @@
                 {% endif %}
             </div>
 
-            <!-- سمت چپ: دکمه‌های با ابعاد ثابت و یکسان -->
+            <!-- سمت چپ: سبد خرید و دکمه خروج/ورود -->
             <div class="d-flex align-items-center gap-2">
+                <!-- لینک سبد خرید من با شمارنده تعداد -->
+                <a href="{% url 'cart:cart_detail' %}" class="btn btn-outline-success btn-sm position-relative">
+                    🛒 سبد خرید
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-count" style="font-size: 10px; {% if not cart or cart|length == 0 %}display: none;{% endif %}">
+                        {% if cart %}{{ cart|length }}{% else %}0{% endif %}
+                    </span>
+                </a>
+
                 {% if user.is_authenticated %}
-                    <form action="{% url 'accounts:logout' %}" method="post" class="d-inline">
+                    <form action="{% url 'accounts:logout' %}" method="post" class="d-inline ms-1">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-danger btn-sm" style="width: 140px; text-align: center;">خروج</button>
+                        <button type="submit" class="btn btn-outline-danger btn-sm" style="width: 110px; text-align: center;">
+                            <i class="fas fa-sign-out-alt ms-1"></i> خروج
+                        </button>
                     </form>
-                    {% if user.store %}
-                        <a href="{% url 'stores:vendor_dashboard' %}" class="btn btn-outline-primary btn-sm ms-2" style="width: 140px; text-align: center;">پنل فروشگاه من</a>
-                    {% else %}
-                        <a href="{% url 'stores:store_register' %}" class="btn btn-outline-primary btn-sm ms-2" style="width: 140px; text-align: center;">ثبت‌نام فروشگاه</a>
-                    {% endif %}
                 {% else %}
-                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-success btn-sm" style="width: 140px; text-align: center;">ورود / ثبت‌نام</a>
-                    <a href="{% url 'stores:store_register' %}" class="btn btn-outline-primary btn-sm ms-2" style="width: 140px; text-align: center;">ثبت‌نام فروشگاه</a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-success btn-sm ms-1" style="width: 120px; text-align: center;">ورود / ثبت‌نام</a>
                 {% endif %}
             </div>
 
@@ -80,42 +77,33 @@
         {% endblock %}
     </main>
 
-    <!-- اسکریپت‌های بوت‌استرپ -->
+    <!-- اسکریپت‌های بوت‌استرپ و ایجکس سبد خرید -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.add-to-cart-form').forEach(form => {
             form.addEventListener('submit', function (e) {
-                e.preventDefault(); // جلوگیری از پرش صفحه
-            
+                e.preventDefault();
                 let formData = new FormData(this);
                 let msgDiv = this.querySelector('.ajax-msg');
 
                 fetch(this.action, {
                     method: 'POST',
                     body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // ۱. نمایش پیام موفقیت در زیر دکمه محصول
                         if (msgDiv) {
                             msgDiv.style.display = 'block';
-                            setTimeout(() => {
-                                msgDiv.style.display = 'none';
-                            }, 2000);
+                            setTimeout(() => { msgDiv.style.display = 'none'; }, 2000);
                         }
-
-                        // ۲. به‌روزرسانی زنده تعداد سبد خرید در منوی بالا
                         if (data.cart_total !== undefined) {
                             let badge = document.getElementById('cart-count');
                             if (badge) {
                                 badge.innerText = data.cart_total;
-                                badge.style.display = 'inline-block'; // اگر مخفی بود نمایش داده شود
+                                badge.style.display = 'inline-block';
                             }
                         }
                     }
