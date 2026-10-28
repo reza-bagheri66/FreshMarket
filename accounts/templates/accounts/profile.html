@@ -18,6 +18,20 @@
         transform: translateY(-1px);
     }
 
+    .btn-store-vendor {
+        color: #198754;
+        border: 1px solid #198754;
+        background-color: transparent;
+        transition: all 0.3s ease;
+    }
+    .btn-store-vendor:hover {
+        background-color: #198754 !important;
+        color: #ffffff !important;
+        border-color: #198754 !important;
+        box-shadow: 0 4px 12px rgba(25, 135, 84, 0.25);
+        transform: translateY(-1px);
+    }
+
     .btn-custom-logout {
         color: #dc3545;
         border: 1px solid #dc3545;
@@ -30,6 +44,14 @@
         border-color: #dc3545 !important;
         box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
         transform: translateY(-1px);
+    }
+
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.08)!important;
     }
 </style>
 {% endblock %}
@@ -56,7 +78,7 @@
                 <!-- مدیریت یا ثبت‌نام فروشگاه -->
                 <div class="mb-3">
                     {% if request.user.store %}
-                        <a href="{% url 'stores:vendor_dashboard' %}" class="btn btn-success btn-sm w-100 rounded-pill mb-2 shadow-sm py-2">
+                        <a href="{% url 'stores:vendor_dashboard' %}" class="btn btn-store-vendor btn-sm w-100 rounded-pill mb-2 py-2 fw-bold text-decoration-none">
                             <i class="fas fa-store ms-1"></i> ورود به پنل فروشگاه من
                         </a>
                     {% else %}
@@ -70,68 +92,55 @@
                     <button type="button" class="btn btn-edit-profile btn-sm w-100 rounded-pill mb-2 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                         <i class="fas fa-user-edit ms-1"></i> ویرایش اطلاعات شخصی
                     </button>
-                    <a href="{% url 'accounts:logout' %}" class="btn btn-custom-logout btn-sm w-100 rounded-pill py-2 fw-bold text-decoration-none">
+                    <!-- دکمه خروج که مودال تایید را باز می‌کند -->
+                    <button type="button" class="btn btn-custom-logout btn-sm w-100 rounded-pill py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#globalLogoutModal">
                         <i class="fas fa-sign-out-alt ms-1"></i> خروج از حساب
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- بخش محتوای اصلی: تاریخچه سفارش‌ها و آدرس‌ها -->
+        <!-- بخش محتوای اصلی: تاریخچه سفارشات و آدرس‌ها -->
         <div class="col-lg-8">
             
-            <!-- کارت تاریخچه سفارش‌ها -->
-            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h3 class="fw-bold mb-4 text-dark fs-5">
-                    <i class="fas fa-shopping-bag text-success ms-2"></i>سفارش‌های من
-                </h3>
-
-                {% if orders %}
-                    <div class="table-responsive">
-                        <table class="table align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>شماره سفارش</th>
-                                    <th>تاریخ ثبت</th>
-                                    <th>مبلغ کل</th>
-                                    <th>وضعیت</th>
-                                    <th>عملیات</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for order in orders %}
-                                <tr>
-                                    <td>#{{ order.id }}</td>
-                                    <td>{{ order.created_at|date:"Y/m/d" }}</td>
-                                    <td>{{ order.get_total_cost }} تومان</td>
-                                    <td>
-                                        <span class="badge bg-warning text-dark">{{ order.get_status_display|default:"در حال بررسی" }}</span>
-                                    </td>
-                                    <td>
-                                        <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">جزئیات فاکتور</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+            <!-- دکمه/کارت یکپارچه تاریخچه سفارشات -->
+            <div class="mb-4">
+                <a href="{% url 'orders:my_orders' %}" class="card border-0 shadow-sm rounded-4 p-4 text-decoration-none text-dark bg-white d-block position-relative overflow-hidden hover-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-success-subtle text-success rounded-3 p-3 d-flex align-items-center justify-content-center" style="width: 55px; height: 55px;">
+                                <i class="fas fa-shopping-bag fs-3"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold text-dark fs-5 mb-1">تاریخچه سفارشات</h4>
+                                <p class="text-muted small mb-0">مشاهده وضعیت مرسوله‌ها، فاکتورها و پیگیری خریدهای قبلی</p>
+                            </div>
+                        </div>
+                        <div class="text-success fs-5 ms-2">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
                     </div>
-                {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-box-open text-muted fs-2 mb-2"></i>
-                        <p class="text-muted small">شما هنوز هیچ سفارشی ثبت نکرده‌اید.</p>
-                    </div>
-                {% endif %}
+                </a>
             </div>
 
             <!-- کارت آدرس‌های من -->
             <div class="card border-0 shadow-sm rounded-4 p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="fw-bold text-dark fs-5 m-0">
-                        <i class="fas fa-map-marker-alt text-danger ms-2"></i>آدرس‌های من
-                    </h3>
-                    <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#addAddressModal">
-                        <i class="fas fa-plus ms-1"></i> افزودن آدرس جدید
-                    </button>
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- تغییر رنگ باکس لوکیشن به سبز (Success) -->
+                        <div class="bg-success-subtle text-success rounded-3 p-3 d-flex align-items-center justify-content-center" style="width: 55px; height: 55px;">
+                            <i class="fas fa-map-marker-alt fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold text-dark fs-5 mb-1">آدرس‌های من</h3>
+                            <p class="text-muted small mb-0">مدیریت آدرس‌های ثبت‌شده برای تحویل سفارش‌ها</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 py-2 fw-bold shadow-xs" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                            <i class="fas fa-plus ms-1"></i> افزودن آدرس جدید
+                        </button>
+                    </div>
                 </div>
 
                 {% if addresses %}
@@ -146,8 +155,78 @@
                                 <p class="text-muted small mb-1"><strong>گیرنده:</strong> {{ addr.full_name }} ({{ addr.phone_number }})</p>
                                 <p class="text-muted small mb-2"><strong>آدرس:</strong> {{ addr.province }}، {{ addr.city }}، {{ addr.address }}</p>
                                 <p class="text-muted small mb-3"><strong>کد پستی:</strong> {{ addr.postal_code }}</p>
-                                <div class="mt-auto text-end">
+                                
+                                <div class="mt-auto text-end d-flex justify-content-end gap-2">
+                                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#editAddressModal{{ addr.id }}">
+                                        ویرایش
+                                    </button>
                                     <a href="{% url 'accounts:delete_address' addr.id %}" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="return confirm('آیا از حذف این آدرس اطمینان دارید؟');">حذف</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal ویرایش آدرس -->
+                        <div class="modal fade" id="editAddressModal{{ addr.id }}" tabindex="-1" aria-labelledby="editAddressModalLabel{{ addr.id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content rounded-4 border-0 shadow">
+                                    <div class="modal-header border-0 pb-0">
+                                        <h5 class="modal-title fw-bold text-dark" id="editAddressModalLabel{{ addr.id }}">
+                                            <i class="fas fa-edit text-primary ms-2"></i>ویرایش آدرس "{{ addr.title }}"
+                                        </h5>
+                                        <button type="button" class="btn-close ms-0 me-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="post" action="{% url 'accounts:profile' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="edit_address_submit" value="1">
+                                        <input type="hidden" name="address_id" value="{{ addr.id }}">
+                                        
+                                        <div class="modal-body text-start pt-3">
+                                            <div class="mb-3">
+                                                <label class="form-label text-secondary small fw-bold">عنوان آدرس</label>
+                                                <input type="text" name="title" value="{{ addr.title }}" class="form-control rounded-3" required>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label text-secondary small fw-bold">نام تحویل‌گیرنده</label>
+                                                    <input type="text" name="full_name" value="{{ addr.full_name }}" class="form-control rounded-3" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label text-secondary small fw-bold">شماره تماس گیرنده</label>
+                                                    <input type="text" name="phone_number" value="{{ addr.phone_number }}" class="form-control rounded-3" required>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label text-secondary small fw-bold">استان</label>
+                                                    <input type="text" name="province" value="{{ addr.province }}" class="form-control rounded-3" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label text-secondary small fw-bold">شهر</label>
+                                                    <input type="text" name="city" value="{{ addr.city }}" class="form-control rounded-3" required>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label text-secondary small fw-bold">آدرس پستی دقیق</label>
+                                                <textarea name="address" class="form-control rounded-3" rows="2" required>{{ addr.address }}</textarea>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label text-secondary small fw-bold">کد پستی</label>
+                                                    <input type="text" name="postal_code" value="{{ addr.postal_code }}" class="form-control rounded-3" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3 d-flex align-items-center pt-3">
+                                                    <div class="form-check">
+                                                        <input type="checkbox" name="is_default" class="form-check-input" id="is_default{{ addr.id }}" {% if addr.is_default %}checked{% endif %}>
+                                                        <label class="form-check-label small fw-bold ms-2" for="is_default{{ addr.id }}">انتخاب به عنوان آدرس پیش‌فرض</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer border-0 pt-0">
+                                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">انصراف</button>
+                                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">ذخیره تغییرات</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>

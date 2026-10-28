@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}ویرایش محصول - {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 600px; margin-top: 50px;">
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <h2 class="fw-bold text-dark mb-4 text-center">ویرایش محصول: {{ product.name }}</h2>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-success rounded-pill px-4 py-2 fw-bold flex-grow-1">ذخیره تغییرات</button>
+                <a href="{% url 'stores:vendor_dashboard' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-bold">انصراف</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,38 +1,72 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container" style="padding-top: 40px; max-width: 800px;">
-    <div class="card shadow-sm p-4">
-        <h2 class="mb-4">📦 سفارش‌های من</h2>
+<div class="container my-5" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold text-dark mb-0"><i class="fas fa-box-open text-primary ms-2"></i>سفارش‌های من</h3>
+                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    <i class="fas fa-user ms-1"></i> بازگشت به پروفایل
+                </a>
+            </div>
 
-        {% if orders %}
-            <div class="list-group">
+            {% if orders %}
                 {% for order in orders %}
-                    <div class="list-group-item mb-3 border rounded p-3 shadow-sm">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h5 class="mb-0">سفارش شماره: {{ order.id }}</h5>
-                            <span class="badge bg-success">{{ order.get_status_display }}</span>
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                        <div class="card-header bg-light py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <span class="fw-bold text-dark fs-6">سفارش شماره: #{{ order.id }}</span>
+                                <span class="text-muted ms-3 fs-7">تاریخ ثبت: {{ order.created|date:"Y/m/d - H:i" }}</span>
+                            </div>
+                            <div>
+                                <span class="badge {% if order.paid %}bg-success-subtle text-success border border-success-subtle{% else %}bg-danger-subtle text-danger border border-danger-subtle{% endif %} px-3 py-1">
+                                    {% if order.paid %}پرداخت شده ✅{% else %}پرداخت نشده ❌{% endif %}
+                                </span>
+                                <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-primary btn-sm rounded-pill px-3 ms-2">
+                                    جزئیات فاکتور <i class="fas fa-arrow-left me-1"></i>
+                                </a>
+                            </div>
                         </div>
-                        <p class="text-muted mb-1">تاریخ ثبت: {{ order.created|date:"Y/m/d - H:i" }}</p>
-                        <p class="mb-2"><strong>مبلغ کل:</strong> {{ order.get_total_cost }} تومان</p>
-                        
-                        <hr>
-                        <h6 class="mb-2">اقلام سفارش:</h6>
-                        <ul class="list-unstyled ps-3">
-                            {% for item in order.items.all %}
-                                <li class="text-secondary">
-                                    - {{ item.product.name }} (تعداد: {{ item.quantity }}) | قیمت: {{ item.get_cost }} تومان
-                                </li>
-                            {% endfor %}
-                        </ul>
+                        <div class="card-body p-4">
+                            <p class="mb-3 text-secondary"><strong>مبلغ کل فاکتور:</strong> <span class="text-success fw-bold">{{ order.get_total_cost }} تومان</span></p>
+                            
+                            <!-- نمایش مرسوله‌های این سفارش -->
+                            <h6 class="fw-bold text-dark mb-3">مرسوله‌های این سفارش:</h6>
+                            <div class="row g-3">
+                                {% for vendor_order in order.vendor_orders.all %}
+                                    <div class="col-md-6">
+                                        <div class="p-3 border rounded-3 bg-white shadow-xs">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="fw-semibold text-primary"><i class="fas store-alt ms-1"></i> {{ vendor_order.store.name }}</span>
+                                                <span class="badge 
+                                                    {% if vendor_order.status == 'pending' %}bg-warning-subtle text-warning-emphasis
+                                                    {% elif vendor_order.status == 'processing' %}bg-info-subtle text-info-emphasis
+                                                    {% elif vendor_order.status == 'shipped' %}bg-primary-subtle text-primary-emphasis
+                                                    {% elif vendor_order.status == 'completed' or vendor_order.status == 'delivered' %}bg-success-subtle text-success-emphasis
+                                                    {% endif %} px-2 py-1">
+                                                    {{ vendor_order.get_status_display }}
+                                                </span>
+                                            </div>
+                                            <p class="text-muted small mb-0">تعداد اقلام: {{ vendor_order.items.count }} محصول</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                 {% endfor %}
-            </div>
-        {% else %}
-            <div class="alert alert-warning text-center">
-                شما هنوز هیچ سفارشی ثبت نکرده‌اید!
-            </div>
-        {% endif %}
+            {% else %}
+                <div class="text-center py-5 card border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <i class="fas fa-shopping-basket fa-3x text-muted mb-3"></i>
+                        <h5 class="fw-bold text-dark">هنوز سفارشی ثبت نکرده‌اید!</h5>
+                        <p class="text-muted">محصولات مورد نظر خود را به سبد خرید اضافه کنید و سفارش خود را ثبت نمایید.</p>
+                        <a href="{% url 'stores:store_list' %}" class="btn btn-primary rounded-pill px-4 mt-2">مشاهده فروشگاه‌ها</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

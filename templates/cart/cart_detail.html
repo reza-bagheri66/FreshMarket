@@ -11,6 +11,25 @@
     .btn-remove { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
     .btn-remove:hover { background: #c82333; }
     
+    /* استایل لینک نام محصول در جدول */
+    .product-link {
+        color: #212529;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.2s;
+    }
+    .product-link:hover {
+        color: #198754;
+        text-decoration: underline;
+    }
+    
+    /* استایل نام فروشگاه زیر محصول */
+    .store-name-small {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 3px;
+    }
+    
     /* استایل‌های شمارنده متقارن */
     .quantity-container {
         display: flex;
@@ -85,7 +104,19 @@
                 {% for item in cart %}
                     {% with product=item.product %}
                     <tr>
-                        <td>{{ product.name }}</td>
+                        <td>
+                            <!-- لینک به صفحه جزئیات محصول و نمایش نام فروشگاه زیر آن -->
+                            <div>
+                                <a href="{% url 'stores:product_detail' product.id %}" class="product-link">
+                                    {{ product.name }}
+                                </a>
+                                {% if product.store %}
+                                    <div class="store-name-small">
+                                        <i class="fas fa-store ms-1"></i> فروشگاه: {{ product.store.name }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </td>
                         <td>
                             <!-- فرم به‌روزرسانی خودکار با دکمه‌های + و - -->
                             <form action="{% url 'cart:cart_update' product.id %}" method="post" class="cart-update-form">

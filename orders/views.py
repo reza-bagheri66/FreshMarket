@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Order, VendorOrder, OrderItem
@@ -65,20 +66,48 @@ def simulate_payment(request, order_id):
     if request.method == 'POST':
         action = request.POST.get('action')
         if action == 'success':
-            # پرداخت موفق سفارش مادر
-            order.paid = True
-            order.save()
             
-            # فعال‌سازی و تغییر وضعیت تمام مرسوله‌های این سفارش مادر به «در حال آماده‌سازی»
-            order.vendor_orders.all().update(status='processing')
-            
-            # پاک کردن سبد خرید بعد از پرداخت موفق
-            cart = Cart(request)
-            cart.clear()
-            
-            return render(request, 'orders/order/created.html', {'order': order})
+            try:
+                with transaction.atomic():
+                    # ۱. بررسی موجودی انبار برای تمام اقلام سفارش
+                    order_items = OrderItem.objects.filter(vendor_order__order=order).select_related('product')
+                    
+                    for item in order_items:
+                        product = item.product
+                        if product.stock < item.quantity:
+                            raise ValueError(f'متأسفانه محصول «{product.name}» در حین خرید شما به اتمام رسید یا موجودی آن کافی نیست.')
+
+                    # ۲. کسر از انبار
+                    for item in order_items:
+                        product = item.product
+                        product.stock -= item.quantity
+                        product.save()
+
+                    # ۳. ثبت پرداخت موفق
+                    order.paid = True
+                    order.save()
+                    
+                    order.vendor_orders.all().update(status='processing')
+
+                # ۴. پاک کردن کل سبد خرید پس از پرداخت موفق و قطعی
+                cart = Cart(request)
+                cart.clear()
+                
+                return render(request, 'orders/order/created.html', {'order': order})
+
+            except ValueError as e:
+                # اگر موجودی کافی نبود، فقط کالاهای ناموجود را از سبد خرید پاک می‌کنیم
+                cart = Cart(request)
+                order_items = OrderItem.objects.filter(vendor_order__order=order).select_related('product')
+                for item in order_items:
+                    if item.product.stock < item.quantity:
+                        cart.remove(item.product)
+
+                error_msg = str(e)
+                # ارسال مستقیم خطا به قالب بدون استفاده از سیستم messages جنگو
+                return render(request, 'orders/order/payment_failed.html', {'order': order, 'error_message': error_msg})
+
         else:
-            # تراکنش ناموفق یا انصراف
             return render(request, 'orders/order/payment_failed.html', {'order': order})
 
     return render(request, 'orders/order/payment_gateway.html', {'order': order})

@@ -5,7 +5,6 @@ from .forms import UserRegisterForm, UserLoginForm, UserProfileEditForm, UserAdd
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import UserAddress
-from orders.models import Order
 
 def register_view(request):
     if request.method == 'POST':
@@ -75,37 +74,47 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    # فرم ویرایش مشخصات شخصی
-    if request.method == 'POST' and 'edit_profile_submit' in request.POST:
-        form = UserProfileEditForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'اطلاعات شخصی با موفقیت به‌روزرسانی شد!')
-            return redirect('accounts:profile')
-    else:
-        form = UserProfileEditForm(instance=request.user)
+    # فرم‌های پیش‌فرض
+    form = UserProfileEditForm(instance=request.user)
+    address_form = UserAddressForm()
 
-    # فرم ثبت آدرس جدید
-    if request.method == 'POST' and 'add_address_submit' in request.POST:
-        address_form = UserAddressForm(request.POST)
-        if address_form.is_valid():
-            new_address = address_form.save(commit=False)
-            new_address.user = request.user
-            # اگر این آدرس پیش‌فرض است، بقیه آدرس‌های کاربر را از حالت پیش‌فرض خارج کن
-            if new_address.is_default:
-                request.user.addresses.all().update(is_default=False)
-            new_address.save()
-            messages.success(request, 'آدرس جدید با موفقیت ثبت شد!')
-            return redirect('accounts:profile')
-    else:
-        address_form = UserAddressForm()
+    if request.method == 'POST':
+        # ۱. ویرایش مشخصات شخصی
+        if 'edit_profile_submit' in request.POST:
+            form = UserProfileEditForm(request.POST, instance=request.user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'اطلاعات شخصی با موفقیت به‌روزرسانی شد!')
+                return redirect('accounts:profile')
 
-    # فراخوانی مستقیم و مطمئن سفارش‌های کاربر
-    orders = Order.objects.filter(user=request.user)
+        # ۲. ثبت آدرس جدید
+        elif 'add_address_submit' in request.POST:
+            address_form = UserAddressForm(request.POST)
+            if address_form.is_valid():
+                new_address = address_form.save(commit=False)
+                new_address.user = request.user
+                if new_address.is_default:
+                    request.user.addresses.all().update(is_default=False)
+                new_address.save()
+                messages.success(request, 'آدرس جدید با موفقیت ثبت شد!')
+                return redirect('accounts:profile')
+
+        # ۳. ویرایش آدرس موجود (بخش جدید)
+        elif 'edit_address_submit' in request.POST:
+            address_id = request.POST.get('address_id')
+            address_instance = get_object_or_404(UserAddress, id=address_id, user=request.user)
+            edit_address_form = UserAddressForm(request.POST, instance=address_instance)
+            if edit_address_form.is_valid():
+                edited_address = edit_address_form.save(commit=False)
+                if edited_address.is_default:
+                    request.user.addresses.all().exclude(id=address_id).update(is_default=False)
+                edited_address.save()
+                messages.success(request, 'آدرس با موفقیت ویرایش شد!')
+                return redirect('accounts:profile')
+
     addresses = request.user.addresses.all()
 
     context = {
-        'orders': orders,
         'addresses': addresses,
         'form': form,
         'address_form': address_form,

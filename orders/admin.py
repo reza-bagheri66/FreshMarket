@@ -15,15 +15,23 @@ class VendorOrderInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'first_name', 'last_name', 'phone_number', 'paid', 'created', 'get_total_cost']
+    list_display = ['id', 'user', 'first_name', 'last_name', 'phone_number', 'paid', 'created', 'get_total_cost_display']
     list_filter = ['paid', 'created']
-    search_fields = ['first_name', 'last_name', 'phone_number', 'id']
+    # search_fields موقتاً حذف شد
     inlines = [VendorOrderInline]
+
+    @admin.display(description='مبلغ کل (تومان)')
+    def get_total_cost_display(self, obj):
+        return obj.get_total_cost()
 
 
 @admin.register(VendorOrder)
 class VendorOrderAdmin(admin.ModelAdmin):
-    list_display = ['tracking_code', 'order', 'store', 'status', 'created', 'get_total_cost']
-    list_filter = ['status', 'store', 'created']  # اینجارو چک کن که 'created' باشد نه created_at
-    search_fields = ['order__id', 'store__name']
+    list_display = ['tracking_code', 'order', 'store', 'status', 'created', 'get_total_cost_display']
+    list_filter = ['status', 'store', 'created']
+    # search_fields موقتاً حذف شد
     inlines = [OrderItemInline]
+
+    @admin.display(description='مبلغ کل (تومان)')
+    def get_total_cost_display(self, obj):
+        return obj.get_total_cost()
