@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4 px-4" dir="rtl">
+    <!-- هدر مرسوله -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">جزئیات سفارش</h2>
+            <p class="text-muted mb-0">
+                فروشگاه: <span class="fw-semibold text-primary">{{ vendor_order.store.name }}</span> | 
+                شماره سفارش: <span class="font-monospace fw-bold text-dark">{{ vendor_order.tracking_code }}</span> | 
+                تاریخ ثبت: <span class="font-monospace fw-bold text-dark" style="direction: ltr; display: inline-block;">{{ vendor_order.created|date:"Y/m/d - H:i" }}</span>
+            </p>
+        </div>
+        <a href="{% url 'orders:vendor_order_list' vendor_order.store.slug %}" class="btn btn-warning text-dark fw-semibold btn-sm px-3 rounded-pill shadow-sm">
+            <i class="fas fa-arrow-right ms-1"></i> بازگشت به مدیریت سفارش‌ها
+        </a>
+    </div>
+
+    <!-- اطلاعات مرجع (سفارش‌دهنده، گیرنده و اطلاعات مرسوله) -->
+    <div class="row g-4 mb-4">
+        <!-- ۱. مشخصات سفارش‌دهنده -->
+        <div class="col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                <h5 class="fw-bold text-dark mb-3"><i class="fas fa-user-circle text-primary ms-2"></i>مشخصات سفارش‌دهنده</h5>
+                <p class="mb-2"><strong>نام کاربر:</strong> <span class="text-primary fw-semibold">
+                    {% if vendor_order.order.user.first_name or vendor_order.order.user.last_name %}
+                        {{ vendor_order.order.user.first_name }} {{ vendor_order.order.user.last_name }}
+                    {% else %}
+                        ثبت‌نشده
+                    {% endif %}
+                </span></p>
+                <p class="mb-0"><strong>موبایل:</strong> <span class="text-primary fw-semibold font-monospace" style="direction: ltr; display: inline-block;">{{ vendor_order.order.user.username }}</span></p>
+            </div>
+        </div>
+
+        <!-- ۲. مشخصات گیرنده -->
+        <div class="col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                <h5 class="fw-bold text-dark mb-3"><i class="fas fa-user-tag text-danger ms-2"></i>مشخصات گیرنده</h5>
+                <p class="mb-2"><strong>نام گیرنده:</strong> <span class="text-danger fw-semibold">{{ vendor_order.order.first_name }} {{ vendor_order.order.last_name }}</span></p>
+                <p class="mb-2"><strong>تلفن تماس:</strong> <span class="text-danger fw-semibold font-monospace" style="direction: ltr; display: inline-block;">{{ vendor_order.order.phone_number }}</span></p>
+                <p class="mb-0"><strong>آدرس دقیق:</strong> <span class="text-dark fw-medium lh-base">{{ vendor_order.order.address }}</span></p>
+            </div>
+        </div>
+
+        <!-- ۳. اطلاعات مرسوله -->
+        <div class="col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                <h5 class="fw-bold text-dark mb-3"><i class="fas fa-info-circle text-success ms-2"></i>اطلاعات مرسوله</h5>
+                <p class="mb-2"><strong>وضعیت پرداخت:</strong> 
+                    {% if vendor_order.order.paid %}
+                        <span class="text-success fw-semibold">پرداخت موفق ✅</span>
+                    {% else %}
+                        <span class="text-danger fw-semibold">پرداخت ناموفق ❌</span>
+                    {% endif %}
+                </p>
+                <p class="mb-0"><strong>مجموع مبلغ این مرسوله:</strong> <span class="text-success fw-bold fs-5">{{ vendor_order.get_total_cost }} تومان</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- جدول اقلام این مرسوله -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div class="card-header bg-light py-3 px-4">
+            <h5 class="fw-bold text-dark mb-0"><i class="fas fa-boxes text-primary ms-2"></i>محصولات موجود در این مرسوله</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-secondary text-uppercase fs-7">
+                    <tr class="text-center">
+                        <th class="py-3 px-4 text-start">محصول</th>
+                        <th class="py-3 text-center text-nowrap">قیمت واحد</th>
+                        <th class="py-3 text-center text-nowrap">تعداد</th>
+                        <th class="py-3 text-end px-4 text-nowrap">قیمت کل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in vendor_order.items.all %}
+                        <tr>
+                            <td class="px-4 py-3 text-start">
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="rounded-3 border" style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="fw-semibold text-dark mb-0">{{ item.product.name }}</h6>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center fw-medium text-nowrap">{{ item.price }} تومان</td>
+                            <td class="text-center font-monospace fw-bold text-nowrap">{{ item.quantity }}</td>
+                            <td class="text-end px-4 fw-bold text-success text-nowrap">{{ item.get_cost }} تومان</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold py-3 px-4">جمع کل این مرسوله:</td>
+                        <td class="text-end px-4 fw-bold text-success py-3 text-nowrap">{{ vendor_order.get_total_cost }} تومان</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

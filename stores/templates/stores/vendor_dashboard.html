@@ -1,9 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container my-4">
-    <h2>پنل مدیریت فروشگاه {{ store.name }}</h2>
-    <hr>
+<div class="container my-4" dir="rtl">
+    <!-- هدر صفحه و دکمه بازگشت -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">پنل مدیریت فروشگاه {{ store.name }}</h2>
+        </div>
+        <a href="{% url 'accounts:profile' %}" class="btn btn-warning text-dark fw-semibold btn-sm px-3 rounded-pill shadow-sm">
+            <i class="fas fa-arrow-right ms-1"></i> بازگشت به حساب کاربری من
+        </a>
+    </div>
 
     <!-- وضعیت تایید فروشگاه -->
     <div class="alert {% if store.is_active %}alert-success{% else %}alert-warning{% endif %}" role="alert">
@@ -16,49 +23,49 @@
     </div>
 
     <!-- اطلاعات خلاصه فروشگاه -->
-    <div class="card mb-4">
+    <div class="card mb-4 border-0 shadow-sm rounded-4">
         <div class="card-body">
-            <h5 class="card-title">مشخصات فروشگاه</h5>
+            <h5 class="card-title fw-bold">مشخصات فروشگاه</h5>
             <p class="card-text"><strong>محله:</strong> {{ store.neighborhood }}</p>
-            <p class="card-text"><strong>شماره تماس:</strong> {{ store.phone_number }}</p>
-            <p class="card-text"><strong>حداقل مبلغ سفارش:</strong> {{ store.min_order_amount }} تومان</p>
+            <p class="card-text"><strong>شماره تماس:</strong> <span class="font-monospace" style="direction: ltr; display: inline-block;">{{ store.phone_number }}</span></p>
+            <p class="card-text"><strong>حداقل مبلغ سفارش:</strong> <span class="font-monospace fw-bold" style="direction: ltr; display: inline-block;">{{ store.min_order_amount }}</span> تومان</p>
         </div>
     </div>
 
     <!-- لیست محصولات فروشگاه -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>محصولات فروشگاه</h4>
+        <h4 class="fw-bold mb-0">محصولات فروشگاه</h4>
         
         <!-- گروه دکمه‌های عملیاتی فروشنده -->
         <div class="d-flex gap-2">
             <!-- دکمه مدیریت سفارش‌ها -->
-            <a href="{% url 'orders:vendor_order_list' store.slug %}" class="btn btn-primary">
-                <i class="fas fa-clipboard-list"></i> مدیریت سفارش‌ها
+            <a href="{% url 'orders:vendor_order_list' store.slug %}" class="btn btn-primary fw-semibold px-3 rounded-pill shadow-sm">
+                <i class="fas fa-clipboard-list ms-1"></i> مدیریت سفارش‌ها
                 {% if store.orders.count > 0 %}
-                    <span class="badge bg-light text-dark">{{ store.orders.count }}</span>
+                    <span class="badge bg-light text-dark ms-1 font-monospace">{{ store.orders.count }}</span>
                 {% endif %}
             </a>
             
             <!-- دکمه افزودن محصول جدید -->
-            <a href="{% url 'stores:add_product' %}" class="btn btn-success">
-                <i class="fas fa-plus"></i> افزودن محصول جدید
+            <a href="{% url 'stores:add_product' %}" class="btn btn-success fw-semibold px-3 rounded-pill shadow-sm">
+                <i class="fas fa-plus ms-1"></i> افزودن محصول جدید
             </a>
         </div>
     </div>
 
     {% if products %}
-        <ul class="list-group">
+        <ul class="list-group border-0 shadow-sm rounded-4 overflow-hidden">
             {% for product in products %}
-                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 border-bottom">
                     <div>
                         <span class="fw-bold text-dark fs-6">{{ product.name }}</span>
-                        <span class="text-muted small ms-3">(موجودی: {{ product.stock }} عدد)</span>
+                        <span class="text-muted small ms-3">(موجودی: <span class="font-monospace fw-bold" style="direction: ltr; display: inline-block;">{{ product.stock }}</span> عدد)</span>
                     </div>
                     
                     <div class="d-flex align-items-center gap-3">
-                        <span class="badge bg-light text-success border border-success px-3 py-2 fs-6">{{ product.price }} تومان</span>
+                        <span class="badge bg-light text-success border border-success px-3 py-2 fs-6 font-monospace" style="direction: ltr; display: inline-block;">{{ product.price }} تومان</span>
                         <a href="{% url 'stores:product_edit' product.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                            <i class="fas fa-edit"></i> ویرایش
+                            <i class="fas fa-edit ms-1"></i> ویرایش
                         </a>
                     </div>
                 </li>

@@ -53,7 +53,8 @@ class VendorOrder(models.Model):
             index = vendor_orders.index(self) + 1
         except ValueError:
             index = 1
-        return f"{self.order.id}-{index}"
+        # استفاده از اسلش و صفرِ پیشوند سه‌رقمی (مثلا 10/001)
+        return f"{self.order.id}/{index:03d}"
 
     def __str__(self):
         return f"مرسوله {self.tracking_code} - فروشگاه {self.store.name}"

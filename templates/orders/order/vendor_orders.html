@@ -8,7 +8,7 @@
             <h2 class="fw-bold text-dark mb-1">مدیریت سفارش‌ها</h2>
             <p class="text-muted mb-0">فروشگاه: <span class="fw-semibold text-primary">{{ store.name }}</span></p>
         </div>
-        <a href="{% url 'stores:vendor_dashboard' %}" class="btn btn-outline-secondary btn-sm px-3 rounded-pill shadow-sm">
+        <a href="{% url 'stores:vendor_dashboard' %}" class="btn btn-warning text-dark fw-semibold btn-sm px-3 rounded-pill shadow-sm">
             <i class="fas fa-arrow-right ms-1"></i> بازگشت به پنل مدیریت فروشگاه
         </a>
     </div>
@@ -16,113 +16,82 @@
     {% if orders %}
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 text-nowrap">
+                <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light text-secondary text-uppercase fs-7">
-                        <tr>
-                            <th class="py-3 px-3" style="min-width: 130px;">شماره سفارش</th>
-                            <th class="py-3">سفارش‌دهنده</th>
-                            <th class="py-3">موبایل کاربر</th>
-                            <th class="py-3">نام گیرنده</th>
-                            <th class="py-3">تلفن گیرنده</th>
-                            <th class="py-3" style="min-width: 250px;">آدرس گیرنده</th>
-                            <th class="py-3">مبلغ کل</th>
-                            <th class="py-3">تاریخ ثبت</th>
-                            <th class="py-3 text-center">پرداخت</th>
-                            <th class="py-3 text-center">وضعیت</th>
-                            <th class="py-3 text-center">عملیات</th>
+                        <tr class="text-center">
+                            <th class="py-3 px-3 text-nowrap" style="min-width: 130px;">شماره سفارش</th>
+                            <th class="py-3 text-nowrap" style="min-width: 150px;">سفارش‌دهنده</th>
+                            <th class="py-3 text-nowrap" style="min-width: 140px;">موبایل</th>
+                            <th class="py-3 text-nowrap" style="min-width: 140px;">تاریخ ثبت</th>
+                            <th class="py-3 text-nowrap" style="min-width: 130px;">پرداخت</th>
+                            <th class="py-3 text-nowrap" style="min-width: 150px;">وضعیت مرسوله</th>
+                            <th class="py-3 text-nowrap" style="min-width: 180px;">عملیات تغییر وضعیت</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for order in orders %}
                             <tr>
-                                <!-- شماره سفارش (قرمز، سمت راست، با فاصله کم و آیکون قرمز در سمت چپ) -->
-                                <td class="px-3">
-                                    <a href="{% url 'orders:order_detail' order.id %}" class="text-decoration-none text-danger d-flex justify-content-between align-items-center w-100 px-1">
-                                        <span class="fw-bold">{{ order.id }}</span>
+                                <!-- شماره سفارش (با فرمت 10/001) -->
+                                <td class="px-3 text-center text-nowrap">
+                                    <a href="{% url 'orders:vendor_order_detail' order.id %}" class="text-decoration-none text-danger d-inline-flex justify-content-center align-items-center gap-1">
+                                        <span class="font-monospace fw-bold">{{ order.tracking_code }}</span>
                                         <i class="fas fa-external-link-alt fa-xs"></i>
                                     </a>
                                 </td>
                                 
-                                <!-- سفارش‌دهنده (آبی) -->
-                                <td>
+                                <!-- سفارش‌دهنده -->
+                                <td class="text-center text-nowrap">
                                     <div class="fw-semibold text-primary">
-                                        {% if order.user.first_name or order.user.last_name %}
-                                            {{ order.user.first_name }} {{ order.user.last_name }}
+                                        {% if order.order.user.first_name or order.order.user.last_name %}
+                                            {{ order.order.user.first_name }} {{ order.order.user.last_name }}
                                         {% else %}
-                                            {{ order.user.username }}
+                                            {{ order.order.user.username }}
                                         {% endif %}
                                     </div>
                                 </td>
 
-                                <!-- موبایل کاربر (آبی) -->
-                                <td>
-                                    <div class="fw-semibold text-primary" style="direction: ltr; display: inline-block;">
-                                        {{ order.user.username }}
+                                <!-- موبایل کاربر -->
+                                <td class="text-center text-nowrap">
+                                    <div class="fw-semibold text-primary font-monospace" style="direction: ltr; display: inline-block;">
+                                        {{ order.order.user.username }}
                                     </div>
-                                </td>
-
-                                <!-- نام گیرنده (قرمز) -->
-                                <td>
-                                    <div class="fw-semibold text-danger">
-                                        {{ order.first_name }} {{ order.last_name }}
-                                    </div>
-                                </td>
-
-                                <!-- تلفن گیرنده (قرمز) -->
-                                <td>
-                                    <div class="fw-semibold text-danger" style="direction: ltr; display: inline-block;">
-                                        {{ order.phone_number }}
-                                    </div>
-                                </td>
-
-                                <!-- آدرس گیرنده -->
-                                <td class="py-3" style="white-space: normal; min-width: 250px; max-width: 320px;">
-                                    <p class="mb-0 text-secondary small lh-sm">
-                                        {{ order.address }}
-                                    </p>
-                                </td>
-
-                                <!-- مبلغ کل -->
-                                <td>
-                                    <span class="fw-bold text-success">{{ order.get_total_cost }}</span>
-                                    <small class="text-muted">تومان</small>
                                 </td>
 
                                 <!-- تاریخ ثبت -->
-                                <td>
-                                    <div class="small text-muted font-monospace">
-                                        {{ order.created|date:"Y/m/d" }}<br>
-                                        <span class="text-secondary">{{ order.created|date:"H:i" }}</span>
+                                <td class="text-center text-nowrap">
+                                    <div class="small text-muted font-monospace fw-bold" style="direction: ltr; display: inline-block;">
+                                        {{ order.created|date:"Y/m/d" }} - {{ order.created|date:"H:i" }}
                                     </div>
                                 </td>
 
                                 <!-- وضعیت پرداخت -->
-                                <td class="text-center">
-                                    {% if order.paid %}
+                                <td class="text-center text-nowrap">
+                                    {% if order.order.paid %}
                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">پرداخت موفق ✅</span>
                                     {% else %}
-                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">پرداخت نشده ❌</span>
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">پرداخت ناموفق ❌</span>
                                     {% endif %}
                                 </td>
 
-                                <!-- وضعیت سفارش -->
-                                <td class="text-center">
+                                <!-- وضعیت مرسوله -->
+                                <td class="text-center text-nowrap">
                                     <span class="badge px-3 py-2 
                                         {% if order.status == 'pending' %}bg-warning-subtle text-warning-emphasis border border-warning-subtle
                                         {% elif order.status == 'processing' %}bg-info-subtle text-info-emphasis border border-info-subtle
                                         {% elif order.status == 'shipped' %}bg-primary-subtle text-primary-emphasis border border-primary-subtle
                                         {% elif order.status == 'completed' or order.status == 'delivered' %}bg-success-subtle text-success-emphasis border border-success-subtle
+                                        {% elif order.status == 'cancelled' or order.status == 'canceled' %}bg-danger-subtle text-danger-emphasis border border-danger-subtle
                                         {% endif %}">
                                         {{ order.get_status_display }}
                                     </span>
                                 </td>
 
                                 <!-- تغییر وضعیت -->
-                                <td class="text-center">
-                                    <form method="post" class="d-inline-flex align-items-center gap-1">
+                                <td class="text-center text-nowrap">
+                                    <form method="post" class="d-inline-flex align-items-center gap-1 justify-content-center">
                                         {% csrf_token %}
                                         <input type="hidden" name="order_id" value="{{ order.id }}">
-                                        <select name="status" class="form-select form-select-sm shadow-none" style="width: 120px; font-size: 0.85rem;">
+                                        <select name="status" class="form-select form-select-sm shadow-none" style="width: 110px; font-size: 0.85rem;">
                                             {% for key, val in order.STATUS_CHOICES %}
                                                 <option value="{{ key }}" {% if order.status == key %}selected{% endif %}>{{ val }}</option>
                                             {% endfor %}

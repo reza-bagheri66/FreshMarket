@@ -6,8 +6,8 @@
         <div class="col-lg-10">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="fw-bold text-dark mb-0"><i class="fas fa-box-open text-primary ms-2"></i>سفارش‌های من</h3>
-                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                    <i class="fas fa-user ms-1"></i> بازگشت به پروفایل
+                <a href="{% url 'accounts:profile' %}" class="btn btn-warning text-dark fw-semibold btn-sm px-3 rounded-pill shadow-sm">
+                    <i class="fas fa-arrow-right ms-1"></i> بازگشت به حساب کاربری من
                 </a>
             </div>
 
@@ -16,8 +16,8 @@
                     <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
                         <div class="card-header bg-light py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <div>
-                                <span class="fw-bold text-dark fs-6">سفارش شماره: #{{ order.id }}</span>
-                                <span class="text-muted ms-3 fs-7">تاریخ ثبت: {{ order.created|date:"Y/m/d - H:i" }}</span>
+                                <span class="fw-bold text-dark fs-6">سفارش شماره: <span class="font-monospace fw-bold text-dark">{{ order.id }}</span></span>
+                                <span class="text-muted ms-3 fs-7">تاریخ ثبت: <span class="font-monospace fw-bold text-dark" style="direction: ltr; display: inline-block;">{{ order.created|date:"Y/m/d - H:i" }}</span></span>
                             </div>
                             <div>
                                 <span class="badge {% if order.paid %}bg-success-subtle text-success border border-success-subtle{% else %}bg-danger-subtle text-danger border border-danger-subtle{% endif %} px-3 py-1">
@@ -29,7 +29,7 @@
                             </div>
                         </div>
                         <div class="card-body p-4">
-                            <p class="mb-3 text-secondary"><strong>مبلغ کل فاکتور:</strong> <span class="text-success fw-bold">{{ order.get_total_cost }} تومان</span></p>
+                            <p class="mb-3 text-secondary"><strong>مبلغ کل فاکتور:</strong> <span class="text-success fw-bold font-monospace" style="direction: ltr; display: inline-block;">{{ order.get_total_cost }} تومان</span></p>
                             
                             <!-- نمایش مرسوله‌های این سفارش -->
                             <h6 class="fw-bold text-dark mb-3">مرسوله‌های این سفارش:</h6>
@@ -48,7 +48,7 @@
                                                     {{ vendor_order.get_status_display }}
                                                 </span>
                                             </div>
-                                            <p class="text-muted small mb-0">تعداد اقلام: {{ vendor_order.items.count }} محصول</p>
+                                            <p class="text-muted small mb-0">تعداد اقلام: <span class="font-monospace fw-bold" style="direction: ltr; display: inline-block;">{{ vendor_order.items.count }}</span> محصول</p>
                                         </div>
                                     </div>
                                 {% endfor %}

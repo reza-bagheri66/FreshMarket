@@ -136,8 +136,8 @@ def vendor_order_list(request, store_slug):
     # بررسی مالکیت فروشگاه توسط کاربر جاری
     store = get_object_or_404(Store, slug=store_slug, owner=request.user)
     
-    # استخراج مرسوله‌های اختصاصی مربوط به این فروشگاه
-    vendor_orders = VendorOrder.objects.filter(store=store).order_by('-created')
+    # استخراج مرسوله‌های اختصاصی این فروشگاه با فیلتر دقیقِ store=store
+    vendor_orders = VendorOrder.objects.filter(store=store).select_related('order', 'order__user', 'store').prefetch_related('items__product').order_by('-created')
     
     # تغییر وضعیت مرسوله توسط فروشنده
     if request.method == 'POST':
@@ -151,7 +151,7 @@ def vendor_order_list(request, store_slug):
 
     context = {
         'store': store,
-        'orders': vendor_orders, # ارسال مرسوله‌های این فروشگاه به قالب
+        'orders': vendor_orders, # فقط مرسوله‌های مختصِ این فروشگاه نمایش داده می‌شوند
     }
     return render(request, 'orders/order/vendor_orders.html', context)
 
@@ -169,3 +169,10 @@ def order_detail(request, order_id):
         return redirect('stores:store_list')
         
     return render(request, 'orders/order/order_detail.html', {'order': order})
+
+
+@login_required
+def vendor_order_detail(request, vendor_order_id):
+    # بررسی اینکه مرسوله متعلق به فروشگاه‌های خودِ این کاربر (فروشنده) باشد
+    vendor_order = get_object_or_404(VendorOrder, id=vendor_order_id, store__owner=request.user)
+    return render(request, 'orders/order/vendor_order_detail.html', {'vendor_order': vendor_order})

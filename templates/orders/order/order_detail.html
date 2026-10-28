@@ -49,7 +49,7 @@
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
                     <div class="card-header bg-light py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <h5 class="fw-bold text-dark mb-0">
-                            <i class="fas store-alt text-primary ms-2"></i> مرسوله از فروشگاه: <span class="text-primary">{{ vendor_order.store.name }}</span>
+                            <i class="fas fa-store text-primary ms-2"></i> مرسوله از فروشگاه: <span class="text-primary">{{ vendor_order.store.name }}</span>
                         </h5>
                         <span class="badge px-3 py-1 
                             {% if vendor_order.status == 'pending' %}bg-warning-subtle text-warning-emphasis border border-warning-subtle
@@ -90,7 +90,7 @@
                                 {% endfor %}
                             </tbody>
                             <tfoot class="table-light">
-                                x<tr>
+                                <tr>
                                     <td colspan="3" class="text-end fw-bold py-3 px-4">مجموع این مرسوله:</td>
                                     <td class="text-end px-4 fw-bold text-success py-3">{{ vendor_order.get_total_cost }} تومان</td>
                                 </tr>
